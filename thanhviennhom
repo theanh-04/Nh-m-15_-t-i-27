@@ -1,0 +1,82 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class Member {
+  final String name;
+  final String role;
+  final String image;
+  final String description;
+
+  Member({
+    required this.name,
+    required this.role,
+    required this.image,
+    required this.description,
+  });
+}
+
+class MyApp extends StatelessWidget {
+  final List<Member> members = [
+    Member(
+      name: "Vũ Trần Thế Anh",
+      role: "Trưởng Nhóm",
+      image: "https://i.pravatar.cc/150?img=1",
+      description: "Quản lý dự án và phân công công việc",
+    ),
+    Member(
+      name: "Lương Thế Anh",
+      role: "Frontend",
+      image: "https://i.pravatar.cc/150?img=2",
+      description: "Thiết kế giao diện người dùng",
+    ),
+    Member(
+      name: "Vũ Huy Khánh",
+      role: "Backend",
+      image: "https://i.pravatar.cc/150?img=3",
+      description: "Xử lý dữ liệu và API",
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Giới thiệu nhóm',
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text("Thành viên nhóm"),
+          centerTitle: true,
+        ),
+        body: ListView.builder(
+          padding: EdgeInsets.all(10),
+          itemCount: members.length,
+          itemBuilder: (context, index) {
+            final member = members[index];
+            return Card(
+              elevation: 5,
+              margin: EdgeInsets.symmetric(vertical: 10),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: ListTile(
+                leading: CircleAvatar(
+                  radius: 30,
+                  backgroundImage: NetworkImage(member.image),
+                ),
+                title: Text(
+                  member.name,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text("${member.role}\n${member.description}"),
+                isThreeLine: true,
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
