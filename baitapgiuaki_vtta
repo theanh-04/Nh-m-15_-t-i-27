@@ -1,0 +1,170 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: FormScreen(),
+    );
+  }
+}
+
+class FormScreen extends StatefulWidget {
+  const FormScreen({super.key});
+
+  @override
+  State<FormScreen> createState() => _FormScreenState();
+}
+
+class _FormScreenState extends State<FormScreen> {
+  final TextEditingController titleCtrl = TextEditingController();
+  final TextEditingController dateCtrl = TextEditingController();
+  final TextEditingController locationCtrl = TextEditingController();
+  final TextEditingController notesCtrl = TextEditingController(); // New controller for notes
+
+  bool isReminder = true;
+  String method = "Nhắc bằng chuông";
+
+  @override
+  void dispose() {
+    titleCtrl.dispose();
+    dateCtrl.dispose();
+    locationCtrl.dispose();
+    notesCtrl.dispose(); // Dispose the new controller
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Thêm công việc"),
+        backgroundColor: Colors.blueGrey,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: <Widget>[
+            buildRow("Tên công việc", TextField(controller: titleCtrl)),
+
+            const SizedBox(height: 10),
+
+            // Thời gian + icon
+            Row(
+              children: <Widget>[
+                const SizedBox(width: 120, child: Text("Thời gian")),
+                Expanded(
+                  child: TextField(
+                    controller: dateCtrl,
+                    decoration: const InputDecoration(
+                      hintText: "dd/mm",
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8), // Adjust padding
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Icon(Icons.calendar_month),
+              ],
+            ),
+
+            const SizedBox(height: 10),
+
+            buildRow("Địa điểm", TextField(controller: locationCtrl)),
+
+            const SizedBox(height: 10),
+            
+            buildRow(
+                "Ghi chú",
+                TextField(
+                  controller: notesCtrl,
+                  maxLines: 3, // Allow multiple lines for notes
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                  ),
+                )),
+
+            const SizedBox(height: 10),
+
+            // Switch
+            Row(
+              children: <Widget>[
+                const Expanded(child: Text("Nhắc việc trước 1 ngày")),
+                Switch(
+                  value: isReminder,
+                  onChanged: (bool v) => setState(() => isReminder = v),
+                ),
+              ],
+            ),
+
+            // Dropdown
+            Align(
+              alignment: Alignment.centerRight,
+              child: DropdownButton<String>(
+                value: method,
+                items: <String>[
+                  "Nhắc bằng chuông",
+                  "Nhắc bằng email",
+                  "Nhắc bằng thông báo",
+                ].map<DropdownMenuItem<String>>((String e) {
+                  return DropdownMenuItem<String>(
+                    value: e,
+                    child: Text(e),
+                  );
+                }).toList(),
+                onChanged: (String? v) => setState(() => method = v!),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            ElevatedButton(
+              onPressed: () {
+                // ignore: avoid_print
+                print("Tên: ${titleCtrl.text}");
+                // ignore: avoid_print
+                print("Thời gian: ${dateCtrl.text}");
+                // ignore: avoid_print
+                print("Địa điểm: ${locationCtrl.text}");
+                // ignore: avoid_print
+                print("Ghi chú: ${notesCtrl.text}"); // Print notes
+                // ignore: avoid_print
+                print("Nhắc việc trước 1 ngày: $isReminder");
+                // ignore: avoid_print
+                print("Phương thức nhắc: $method");
+              },
+              child: const Text("Ghi lại công việc"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Row chuẩn label + input
+  Widget buildRow(String label, Widget field) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start, // Align to top for multiline input
+      children: <Widget>[
+        SizedBox(
+          width: 120,
+          child: Padding(
+            padding: const EdgeInsets.only(top: 12.0), // Align label with the top of the input
+            child: Text(label),
+          ),
+        ),
+        Expanded(
+          child: field,
+        ),
+      ],
+    );
+  }
+}
