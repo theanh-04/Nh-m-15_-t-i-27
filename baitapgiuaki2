@@ -1,0 +1,216 @@
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Cấu hình game đố vui',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        useMaterial3: true,
+      ),
+      home: const GameSettingsScreen(),
+    );
+  }
+}
+
+class GameSettingsScreen extends StatefulWidget {
+  const GameSettingsScreen({super.key});
+
+  @override
+  State<GameSettingsScreen> createState() => _GameSettingsScreenState();
+}
+
+class _GameSettingsScreenState extends State<GameSettingsScreen> {
+  bool enableSound = false;
+  int maxScore = 3500;
+  bool autoSaveGame = false;
+  double volume = 0.3;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Cấu hình game đố vui',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        elevation: 0,
+      ),
+      body: Container(
+        color: Colors.grey[100],
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Âm thanh
+              _buildSettingRow(
+                label: 'Âm thanh',
+                child: Checkbox(
+                  value: enableSound,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      enableSound = value ?? false;
+                    });
+                  },
+                  activeColor: Colors.blue,
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Điểm cao nhất
+              _buildSettingRow(
+                label: 'Điểm cao nhất',
+                child: SizedBox(
+                  width: 100,
+                  child: TextField(
+                    controller: TextEditingController(text: maxScore.toString()),
+                    keyboardType: TextInputType.number,
+                    textAlign: TextAlign.center,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        maxScore = int.tryParse(value) ?? maxScore;
+                      });
+                    },
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Tự động lưu game
+              _buildSettingRow(
+                label: 'Tự động lưu game',
+                child: Checkbox(
+                  value: autoSaveGame,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      autoSaveGame = value ?? false;
+                    });
+                  },
+                  activeColor: Colors.blue,
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Volume
+              const Text(
+                'Volume',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        activeTrackColor: Colors.black,
+                        inactiveTrackColor: Colors.grey[300],
+                        thumbColor: Colors.black,
+                        overlayColor: Colors.black.withOpacity(0.2),
+                        trackHeight: 3,
+                      ),
+                      child: Slider(
+                        value: volume,
+                        min: 0.0,
+                        max: 1.0,
+                        onChanged: (double value) {
+                          setState(() {
+                            volume = value;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    '${(volume * 100).toInt()}%',
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 40),
+
+              // Nút Lưu cấu hình
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    _showSaveDialog();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: const Text(
+                    'Lưu cấu hình',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSettingRow({required String label, required Widget child}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+        child,
+      ],
+    );
+  }
+
+  void _showSaveDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Cấu hình đã lưu'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Âm thanh: ${enableSound ? "Bật" : "Tắt"}'),
+              Text('Điểm cao nhất: $maxScore'),
+              Text('Tự động lưu game: ${autoSaveGame ? "Bật" : "Tắt"}'),
+              Text('Volume: ${(volume * 100).toInt()}%'),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
